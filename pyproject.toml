@@ -1,0 +1,15 @@
+[project]
+name = "gpu-programming"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jaxtyping>=0.3.2",
+    "numpy>=2.3.2",
+    "torch>=2.8.0",
+    "triton-viz",
+]
+
+[tool.uv.sources]
+triton-viz = { git = "https://github.com/Deep-Learning-Profiling-Tools/triton-viz", rev = "v1.1.1" }
