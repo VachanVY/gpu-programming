@@ -28,5 +28,6 @@
   
 * Problem 7/G: Long Sum `G_sum_dim1.py`  
   <img width="800" alt="image" src="https://github.com/user-attachments/assets/3e45f097-6e65-4df9-8808-f2515ed1174e" />
+* <img width="1829" height="917" alt="image" src="https://github.com/user-attachments/assets/0bae59b3-89a5-4050-ad93-2fecb307103f" />
 
 </details>
