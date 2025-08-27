@@ -14,11 +14,17 @@
 
 
 * General Structure of Triton Program
-  * Define `pid`
-  * Using `pid` and `tl.arange` of `block_size`, get `range` for `tl.load` to get the input tensor using input pointer
-  * You have the load tensor, perform operations on it
+  * Define `pid` (program id)
+  * Using `pid` and `tl.arange` of `block_size`, get `range`/`stride`/`indices` for `tl.load` to get the part of the input tensor using the input pointer
+  * Now that you have the loaded tensor, perform operations on it
   * Store the output tensor using `tl.store` in the output pointer
 
+```python
+threadIdx.x in CUDA ≈ entries of tl.arange in Triton.
+blockIdx.x in CUDA ≈ pid in Triton.
+
+Think of tl.arange as “all the thread IDs in this block at once, in a vector”.
+```
 
 ---
 <details>
