@@ -12,10 +12,32 @@
   ```
    </details>
 
+* <details>
+  <summary>Why triton?</summary>
+  <img width="667" height="455" alt="image" src="https://github.com/user-attachments/assets/6cf80107-180b-44aa-93e9-6d9a1f60793b" />
 
+  * HBM is the main GPU memory (DRAM)
+  * Calculations happen in the GPU; there is some memory, but not a lot of memory (SRAM)
+  * So what the kernels do is to reduce the movement between the HBM and the GPU chip
+  * Fuse many operations in one kernel, so that we can reduce the data movement between the HBM and the GPU chip
+  * <img width="1235" height="662" alt="image" src="https://github.com/user-attachments/assets/f2fdc2c7-3ff4-4e71-900e-016e23151a14" />
+
+  </details>
+
+* <details>
+  <summary>FLOPS = FLoating point OPerations per Second</summary>
+  <img width="1003" height="562" alt="image" src="https://github.com/user-attachments/assets/dd31e892-4f94-465d-af4d-aab58a7e13bd" />
+  <img width="797" height="723" alt="image" src="https://github.com/user-attachments/assets/a2067fe2-8939-4289-9afd-345b3327555b" />
+  
+  * Writing custom kernels doesn’t magically increase your GPU’s FLOPs or shrink memory. The chip is fixed. What it does is remove bottlenecks so you get closer to the hardware’s peak
+  * If you tile/cache properly (like cuBLAS, Triton kernels do), you reuse values in shared memory/registers => drastically fewer memory loads
+  * That’s why hand-written kernels can approach peak FLOPs
+
+  </details> 
+   
 * General Structure of Triton Program
   * Define `pid` (program id)
-  * Using `pid` and `tl.arange` of `block_size`, get `range`/`stride`/`indices` for `tl.load` to get the part of the input tensor using the input pointer
+  * Using `pid` and `tl.arange` of `block_size`, get `range`/`indices` for `tl.load` to get the part of the input tensor using the input pointer
   * Now that you have the loaded tensor, perform operations on it
   * Store the output tensor using `tl.store` in the output pointer
 
@@ -26,10 +48,10 @@ blockIdx.x in CUDA ≈ pid in Triton.
 Think of tl.arange as “all the thread IDs in this block at once, in a vector”.
 ```
 
-* Why blocks?
-
+* <details>
+  <summary>Why blocks?</summary>
   <img width="701" height="746" alt="image" src="https://github.com/user-attachments/assets/ce55ab92-69e1-4eb7-bfde-42555feac089" />
-
+  </details>
 
 ---
 <details>
