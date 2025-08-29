@@ -52,7 +52,8 @@ def dot_kernel(
     row_idx = (tl.arange(0, B0) + pid_1 * B0)[None, :, None] # (1, B0, 1)
     col_idx = (tl.arange(0, B1) + pid_0 * B1)[None, None, :] # (1, 1 ,B1)
 
-    acc = tl.zeros((B2, B0, B1), dtype=tl.float32) # (B2, B0, B1)
+    # always keep the the accumulator in higher dtype to prevent overflow
+    accumulator = tl.zeros((B2, B0, B1), dtype=tl.float32) # (B2, B0, B1)
     for mid in tl.range(0, MID, B_MID): # [0:B_MID, B_MID:2*B_MID, 2*B_MID:3*B_MID, ...]
         mid_idx = (tl.arange(0, B_MID) + mid) # (B_MID,)
 
@@ -67,12 +68,12 @@ def dot_kernel(
         y = tl.load(y_ptr + yrange, mask=ymask) # (B2, B_MID, B1)
 
         # matmul
-        acc += tl.dot(x, y) # (B2, B0, B_MID) @ (B2, B_MID, B1) => (B2, B0, B1)
+        tl.dot(x, y, acc=accumulator) # (B2, B0, B_MID) @ (B2, B_MID, B1) => (B2, B0, B1)
 
     # [b, r, c] => b * num_rows * num_cols  +  r * num_cols  +  c
     zrange = bidx * N0 * N1 + row_idx * N1 + col_idx
     zmask = (bidx < N2) & (row_idx < N0) & (col_idx < N1)
-    tl.store(z_ptr + zrange, value=acc, mask=zmask)
+    tl.store(z_ptr + zrange, value=accumulator, mask=zmask)
 
 if __name__ == "__main__":
     test(dot_kernel, dot_spec, B={"B0": 16, "B1": 16, "B2": 1, "B_MID": 16}, nelem={"N0": 32, "N1": 32, "N2": 4, "MID": 32}) # DimGrid(2, 2, 4)
