@@ -26,6 +26,11 @@ blockIdx.x in CUDA ≈ pid in Triton.
 Think of tl.arange as “all the thread IDs in this block at once, in a vector”.
 ```
 
+* Why blocks?
+
+  <img width="701" height="746" alt="image" src="https://github.com/user-attachments/assets/ce55ab92-69e1-4eb7-bfde-42555feac089" />
+
+
 ---
 <details>
   <summary>Notes</summary>
@@ -46,6 +51,7 @@ Think of tl.arange as “all the thread IDs in this block at once, in a vector�
   <img width="767" height="399" alt="image" src="https://github.com/user-attachments/assets/fab9772d-a3e0-4abd-b3ce-69b9f466d87e" />
 * Matmul 11
   <img width="1600" height="817" alt="image" src="https://github.com/user-attachments/assets/ab12d199-fee5-43d2-a9f7-69d98afcb7de" />
+  <img width="701" height="746" alt="image" src="https://github.com/user-attachments/assets/ce55ab92-69e1-4eb7-bfde-42555feac089" />
 
 
 </details>
