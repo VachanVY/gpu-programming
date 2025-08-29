@@ -53,6 +53,15 @@ Think of tl.arange as â€œall the thread IDs in this block at once, in a vectorâ€
   <img width="701" height="746" alt="image" src="https://github.com/user-attachments/assets/ce55ab92-69e1-4eb7-bfde-42555feac089" />
   </details>
 
+* <details>
+  <summary>Memory Hierarchy</summary>
+  <img width="1435" height="857" alt="image" src="https://github.com/user-attachments/assets/eb4334dd-35d7-465e-9fb5-417cc11f02b0" />
+  
+  <img width="1461" height="582" alt="image" src="https://github.com/user-attachments/assets/c0b51ed7-bbd8-4e88-b91f-a09f2c1cd6b3" />
+
+  </details>
+
+
 ---
 <details>
   <summary>Notes</summary>
