@@ -1,3 +1,20 @@
+# Cuda Programming
+* <details>
+  <summary>cuda beginner things</summary>
+  
+  <img width="896" height="946" alt="image" src="https://github.com/user-attachments/assets/b47ab11e-7691-4222-a7be-808a6ebaac5b" />
+
+  * ```python
+    threadIdx.x in CUDA ≈ entries of tl.arange in Triton.
+    blockIdx.x in CUDA ≈ pid in Triton.
+    
+    Think of tl.arange as “all the thread IDs in this block at once, in a vector”.
+    ```
+
+  </details>
+
+
+
 # Triton Programming
 * <details>
   <summary>Installation</summary>
