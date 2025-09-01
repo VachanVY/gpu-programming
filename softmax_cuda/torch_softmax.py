@@ -43,14 +43,25 @@ def my_softmax(x:Tensor, fname:str):
 if __name__ == "__main__":
     (A, B) = SHAPE = (1024, 32768)
     TIMES = 10
+    
+    # warm up torch version
+    torch_softmax(torch.randn(A, B, device="cuda", dtype=torch.float32))
 
     softmax_v0 = lambda x: my_softmax(x, "./libsoftmax_v0.so")
     softmax_v1 = lambda x: my_softmax(x, "./libsoftmax_v1.so")
+    softmax_v2 = lambda x: my_softmax(x, "./libsoftmax_v2.so")
+    # softmax_v3 = lambda x: my_softmax(x, "./libsoftmax_v3.so")
+    
+    # warmup # is it needed?
+    softmax_v0(torch.randn(A, B, device="cuda", dtype=torch.float32))
+    softmax_v1(torch.randn(A, B, device="cuda", dtype=torch.float32))
+    softmax_v2(torch.randn(A, B, device="cuda", dtype=torch.float32))
 
     x = torch.randn(A, B, device="cuda", dtype=torch.float32)
     torch_out, torch_time = torch_softmax(x)
     v0_out, v0_time = softmax_v0(x)
     v1_out, v1_time = softmax_v1(x)
+    v2_out, v2_time = softmax_v2(x)
 
     print("My softmax_v0 comparison:")
     print("Max abs diff:", (abs_diff:=(v0_out - torch_out).abs()).max().item())
@@ -60,4 +71,9 @@ if __name__ == "__main__":
     print("My softmax_v1 comparison:")
     print("Max abs diff:", (abs_diff:=(v1_out - torch_out).abs()).max().item())
     print("Mean abs diff:", abs_diff.mean().item())
-    print(f"v1 Time: {v1_time:<.4f} ms | Torch Time: {torch_time:<.4f} ms")
+    print(f"v1 Time: {v1_time:<.4f} ms | Torch Time: {torch_time:<.4f} ms\n")
+
+    print("My softmax_v2 comparison:")
+    print("Max abs diff:", (abs_diff:=(v2_out - torch_out).abs()).max().item())
+    print("Mean abs diff:", abs_diff.mean().item())
+    print(f"v2 Time: {v2_time:<.4f} ms | Torch Time: {torch_time:<.4f} ms\n")
