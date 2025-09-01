@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Linux CUDA",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/local/cuda/include",
+                "/usr/local/cuda-*/include",
+                "/usr/include/c++/**",
+                "/usr/include",
+                "/usr/include/python3.12"
+            ],
+            "defines": [
+                "__CUDACC__",
+                "__CUDA_ARCH__"
+            ],
+            "compilerPath": "/usr/local/cuda/bin/nvcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
