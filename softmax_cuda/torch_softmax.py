@@ -7,8 +7,8 @@ from torch import Tensor, nn
 sync = lambda: torch.cuda.synchronize()
 seed = lambda s: torch.manual_seed(s)
 
-def torch_softmax(x:Tensor):
-    seed(0)
+def torch_softmax(x:Tensor, s:int=0):
+    seed(s)
     torch_out = torch.empty_like(x)
     sync()
 
@@ -18,8 +18,8 @@ def torch_softmax(x:Tensor):
     t1 = time.time()
     return torch_out, (t1 - t0) * 1000
 
-def my_softmax(x:Tensor, fname:str):
-    seed(0)
+def my_softmax(x:Tensor, fname:str, s:int=0):
+    seed(s)
     lib = ctypes.CDLL(fname)
     lib.softmax.argtypes = [
         ctypes.c_void_p, ctypes.c_void_p,
@@ -43,37 +43,52 @@ def my_softmax(x:Tensor, fname:str):
 if __name__ == "__main__":
     (A, B) = SHAPE = (1024, 32768)
     TIMES = 10
+
+    softmax_v0 = lambda x, s: my_softmax(x, "./libsoftmax_v0.so", s)
+    softmax_v1 = lambda x, s: my_softmax(x, "./libsoftmax_v1.so", s)
+    softmax_v2 = lambda x, s: my_softmax(x, "./libsoftmax_v2.so", s)
+    # softmax_v3 = lambda x: my_softmax(x, "./libsoftmax_v3.so")
+
     
     # warm up torch version
     torch_softmax(torch.randn(A, B, device="cuda", dtype=torch.float32))
-
-    softmax_v0 = lambda x: my_softmax(x, "./libsoftmax_v0.so")
-    softmax_v1 = lambda x: my_softmax(x, "./libsoftmax_v1.so")
-    softmax_v2 = lambda x: my_softmax(x, "./libsoftmax_v2.so")
-    # softmax_v3 = lambda x: my_softmax(x, "./libsoftmax_v3.so")
-    
     # warmup # is it needed?
-    softmax_v0(torch.randn(A, B, device="cuda", dtype=torch.float32))
-    softmax_v1(torch.randn(A, B, device="cuda", dtype=torch.float32))
-    softmax_v2(torch.randn(A, B, device="cuda", dtype=torch.float32))
+    softmax_v0(torch.randn(A, B, device="cuda", dtype=torch.float32), 0)
+    softmax_v1(torch.randn(A, B, device="cuda", dtype=torch.float32), 0)
+    softmax_v2(torch.randn(A, B, device="cuda", dtype=torch.float32), 0)
+    
+    v0_time_avg, v1_time_avg, v2_time_avg = 0, 0, 0
+    torch_time_avg = 0
+    for i in range(TIMES):
+        seed(i)
+        x = torch.randn(A, B, device="cuda", dtype=torch.float32)
+        torch_out, torch_time = torch_softmax(x, i)
+        v0_out, v0_time = softmax_v0(x, i)
+        v1_out, v1_time = softmax_v1(x, i)
+        v2_out, v2_time = softmax_v2(x, i)
 
-    x = torch.randn(A, B, device="cuda", dtype=torch.float32)
-    torch_out, torch_time = torch_softmax(x)
-    v0_out, v0_time = softmax_v0(x)
-    v1_out, v1_time = softmax_v1(x)
-    v2_out, v2_time = softmax_v2(x)
+        v0_time_avg += v0_time
+        v1_time_avg += v1_time
+        v2_time_avg += v2_time
+
+        torch_time_avg += torch_time
+
+    torch_time_avg /= TIMES
+    v0_time_avg /= TIMES
+    v1_time_avg /= TIMES
+    v2_time_avg /= TIMES
 
     print("My softmax_v0 comparison:")
     print("Max abs diff:", (abs_diff:=(v0_out - torch_out).abs()).max().item())
     print("Mean abs diff:", abs_diff.mean().item())
-    print(f"v0 Time: {v0_time:<.4f} ms | Torch Time: {torch_time:<.4f} ms\n")
+    print(f"v0 Time: {v0_time_avg:<.4f} ms | Torch Time: {torch_time_avg:<.4f} ms\n")
 
     print("My softmax_v1 comparison:")
     print("Max abs diff:", (abs_diff:=(v1_out - torch_out).abs()).max().item())
     print("Mean abs diff:", abs_diff.mean().item())
-    print(f"v1 Time: {v1_time:<.4f} ms | Torch Time: {torch_time:<.4f} ms\n")
+    print(f"v1 Time: {v1_time_avg:<.4f} ms | Torch Time: {torch_time_avg:<.4f} ms\n")
 
     print("My softmax_v2 comparison:")
     print("Max abs diff:", (abs_diff:=(v2_out - torch_out).abs()).max().item())
     print("Mean abs diff:", abs_diff.mean().item())
-    print(f"v2 Time: {v2_time:<.4f} ms | Torch Time: {torch_time:<.4f} ms\n")
+    print(f"v2 Time: {v2_time_avg:<.4f} ms | Torch Time: {torch_time_avg:<.4f} ms\n")
