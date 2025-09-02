@@ -18,7 +18,7 @@ __global__ void softmax_v0_kernel(
     // 1. find max
     float maxval = -INFINITY;
     for(size_t j = 0; j < B; j++){
-        maxval = max(maxval, x[i * B + j]);
+        maxval = fmaxf(maxval, x[i * B + j]);
     }
 
     // 2. expf(x - max) for normalization
