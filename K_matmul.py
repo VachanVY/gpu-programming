@@ -68,7 +68,7 @@ def dot_kernel(
         y = tl.load(y_ptr + yrange, mask=ymask) # (B2, B_MID, B1)
 
         # matmul
-        tl.dot(x, y, acc=accumulator) # (B2, B0, B_MID) @ (B2, B_MID, B1) => (B2, B0, B1)
+        accumulator += tl.dot(x, y) # (B2, B0, B_MID) @ (B2, B_MID, B1) => (B2, B0, B1)
 
     # [b, r, c] => b * num_rows * num_cols  +  r * num_cols  +  c
     zrange = bidx * N0 * N1 + row_idx * N1 + col_idx
